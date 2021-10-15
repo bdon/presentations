@@ -1,0 +1,474 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <title>NACIS2021</title>
+        <link rel="stylesheet" href="dist/reset.css">
+        <link rel="stylesheet" href="dist/reveal.css">
+        <link rel="stylesheet" href="dist/theme/serif.css">
+        <link rel="stylesheet" href="plugin/highlight/zenburn.css">
+        <style>
+/*          p, div, span {
+                border: 1px solid red;
+            }
+*/
+            .attribution {
+                font-size: 16px;
+                color: gray;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="reveal">
+            <div class="slides">
+                <section style="text-align:left">
+                    <h3>
+                    Slippy Maps,<br/>
+                    Cartographic Mediums<br/>
+                    & Computation
+                    </h3>
+                    <div style="color:#888">Brandon Liu <br/>
+                        Protomaps LLC
+                    </div>
+                </section>
+                <section>
+                    <div style="font-size:2rem;margin-bottom:4rem">
+                        <div>Interactive slippy maps are everywhere on the web.</div>
+                    </div>
+                    <div style="display:flex;">
+                        <video data-autoplay data-src="images/OsmVideo.mov" style="width:50%"></video>
+                        <video data-autoplay data-src="images/GeojsonIo.mov" style="width:50%;margin-left:2rem"></video>
+                    </div>
+                    <div class="attribution" style='margin-top:1rem'>OpenStreetMap; geojson.io</div>
+                </section>
+                <section>
+                    <div style="font-size:2rem;margin-bottom:4rem">
+                        Many special purpose tools for tiled mapmaking on the web are free and open source.
+                    </div>
+                    <div style="display:flex;justify-content: space-evenly;">
+                        <img src="images/TileMill-0.10.1.png" style="width:40%"></img>
+                        <img src="images/Maputnik.png" style="width:40%"></img>
+                    </div>
+                    <div class="attribution" style='margin-top:1rem'>TileMill, Maputnik</div>
+                </section>
+                <section>
+                    <div style="display:flex;text-align:left;align-items:center;line-height:1.4">
+                        <div style="font-size:2rem;margin-right:2rem">
+                            Though the tools are specialized, the principles are the same: represent points, lines, and polygons via variables like
+                            fill, stroke, color, & texture.
+                            <p class="attribution">Jacques Bertin, Semiology of Graphics</p>
+                        </div>
+                        <img src="images/Bertin_Variables.png" style="width:40%"></img>
+                    </div>
+                </section>
+                <section>
+                    <div style="display:flex;text-align:left;align-items:center;line-height:1.4">
+                        <div style="font-size:2rem">
+                            These principles can be implemented in a physical medium, like ink on paper or woodblock.
+                            <p class="attribution">National Palace Museum</p>
+                        </div>
+                        <img src="images/Qianlong.jpg" style="margin-left: 2rem; width:60%"></img>
+                    </div>
+                </section>
+                <section>
+                    <div style="display:flex;text-align:left;align-items:center">
+                        <div style="font-size:2rem">
+                            Cartographic principles can be implemented in a digital medium...
+                            <p class="attribution">Harvard Laboratory for Computer Graphics and Spatial Analysis</p>
+                        </div>
+                        <img src="images/SYMAP.jpg" style="margin-left: 1rem; width:60%"></img>
+                    </div>
+                </section>
+                <section>
+                    <img src="images/cairo_stroke.png"></img>
+                    <p class="attribution">cairographics.org</p>
+                    <pre><code data-trim data-noescape>
+                    cairo_set_line_width (cr, 0.1);
+                    cairo_set_source_rgb (cr, 0, 0, 0);
+                    cairo_rectangle (cr, 0.25, 0.25, 0.5, 0.5);
+                    cairo_stroke (cr);
+                    </code></pre>
+                    <p>Modern computer graphics are low-level and not specific to mapmaking.</p>
+                </section>
+                <section>
+                    <div style="display:flex;text-align:left;align-items:center">
+                        <div style="font-size:2rem">
+                            Productive computer cartography requires higher level abstractions.
+                            <p class="attribution">Jacques Bertin, Semiology of Graphics</p>
+                        </div>
+                        <img src="images/Bertin_France.jpg" style="width:40%"></img>
+                    </div>
+                </section>
+                <section>
+<pre><code data-line-numbers="1-3|5-10"><script type="text/template"><MarkersSymbolizer width="10" height="10" 
+    stroke="#aaaaaa" stroke-width="3" fill="black">
+</MarkersSymbolizer>
+...
+<TextSymbolizer
+    face-name="Noto Sans Medium" size="16" 
+    fill="black" placement="point" 
+    horizontal-alignment="right" dx="10">
+    [name]
+</TextSymbolizer>
+</script></code></pre>
+                    <img src="images/MapnikBasicPoint.png" class="r-stretch"></img>
+                </section>
+                <section>
+<pre><code data-line-numbers="2"><script type="text/template"><Style name="roads_other"><Rule>
+        <LineSymbolizer stroke="#dddddd" stroke-width="2" />
+    </Rule>
+</Style>
+</script></code></pre>
+                    <img src="images/MapnikBasicLine.png" class="r-stretch"></img>
+                </section>
+                <section>
+<pre><code data-line-numbers="3|8"><script type="text/template"><Style name="water_fill">
+    <Rule>
+        <PolygonSymbolizer fill="#00ABE7" />
+    </Rule>
+</Style>
+<Style name="landuse">
+    <Rule>
+        <PolygonSymbolizer fill="#a1d99b" />
+    </Rule>
+</Style>
+</script></code></pre>
+                    <img src="images/MapnikBasicPolygon.png" class="r-stretch"></img>
+                </section>
+                <section>
+                    <p>Are we all done?</p>
+                    <img src="images/MapnikBasicAll.png" class="r-stretch"></img>
+                </section>
+                <section>
+                    <p>A global slippy map demands <b>automated, rules-based</b> styling based on scale.</p>
+                    <video data-autoplay data-src="images/MapnikBasic.mov" class="r-stretch"></video>
+                </section>
+                <section>
+                    <p>Proportion: Create a relationship between scale and symbol properties.</p>
+<pre><code data-line-numbers="2-4|7-9|12-14"><script type="text/template"><Rule>
+    <MaxScaleDenominator>160000</MaxScaleDenominator>
+    <MinScaleDenominator>80000</MinScaleDenominator>
+    <LineSymbolizer stroke="white" stroke-width="1" />
+</Rule>
+<Rule>
+    <MaxScaleDenominator>80000</MaxScaleDenominator>
+    <MinScaleDenominator>40000</MinScaleDenominator>
+    <LineSymbolizer stroke="white" stroke-width="2" />
+</Rule>
+<Rule>
+    <MaxScaleDenominator>40000</MaxScaleDenominator>
+    <MinScaleDenominator>20000</MinScaleDenominator>
+    <LineSymbolizer stroke="white" stroke-width="4" />
+</Rule>
+</script></code></pre>
+                </section>
+                <section>
+                    <video data-autoplay data-src="images/ScaleZoom.mov" class="r-stretch"></video>
+                </section>
+                <section>
+                    <p>Filtering: Select a subset of features.</p>
+<pre><code data-line-numbers="2-3"><script type="text/template"><Rule>
+    <Filter>[level] = 0 and [kind] = 'highway'</Filter>
+    <LineSymbolizer stroke="green" stroke-width="1" />
+</Rule>
+</script></code></pre>
+                    <img src="images/MapnikFilter.png" class="r-stretch"></img>
+                </section>
+                <section>
+                    Repetition: symbolize the same feature more than once.
+<pre><code data-line-numbers="2|6"><script type="text/template"><Rule>
+    <Filter>[kind] = 'highway'</Filter>
+    <LineSymbolizer stroke="black" stroke-width="8" />
+</Rule>
+<Rule>
+    <Filter>[kind] = 'highway'</Filter>
+    <LineSymbolizer stroke="white" stroke-width="5" />
+</Rule>
+</script></code></pre>
+                    <img src="images/MapnikCasing.png" class="r-stretch"></img>
+                </section>
+                <section>
+                    Labeling: dynamic text placement based on nearby labels.
+<pre><code data-line-numbers="4"><script type="text/template"><TextSymbolizer
+    face-name="Noto Sans Medium" size="16" 
+    fill="black" avoid-edges="true"
+     placement-type="simple" placements="N,S,15,12">
+    [name]
+</TextSymbolizer>
+</script></code></pre>
+                        <img src="images/MapnikPlacement.png"></img>
+                </section>
+                <section>
+                    <div style="display:flex;text-align:left;align-items:center">
+                        <div style="font-size:2rem;margin-right:4rem">
+                            As the rules grow, we need a higher-level abstraction — 
+                            A cartographic language. <br/>
+                            A small amount of computation gives us expressive power — via Cascadenik, CartoCSS, JSON, YAML...
+                            <p class="attribution">Digital Equipment Corporation</p>
+                        </div>
+                        <img src="images/PDP11.jpg" style="width:40%"></img>
+                    </div>
+                </section>
+                <section style="text-align:left">
+                    What would make a language successful?
+                    <p style="font-style:italic">Affordance: The qualities of an object that makes clear how it can be used.</p>
+                    <p style="font-style:italic">Ergonomics: Efficiency of use, or how directly the medium can express cartographic ideas.</p>
+                </section>
+                <section>
+                    Re-use
+                    <pre><code data-line-numbers="3|6,10"> // CartoCSS
+.country-boundary-10m[scalerank<6] {
+  line-color: #ffdddd;
+  line-width: 1;
+
+  [zoom>=6] {
+    line-width: 1.6;
+  }
+
+  [zoom>=7] {
+    line-width: 2.0;
+  }
+}
+</code></pre>
+                </section>
+                <section>
+                    Parameterization
+                    <pre><code data-line-numbers="1,4,8">@color_water: #0000ff;
+#water-bodies-high[zoom>=15]
+{ 
+  polygon-fill: @color_water;
+}
+#water-bodies-low[zoom>=10]
+{ 
+  polygon-fill: @color_water;
+}
+</code></pre>
+                </section>
+                <section>
+                    <div style="font-size:2rem;margin-bottom:4rem">
+                        Variants of a single style
+                    </div>
+                    <img src="images/Toner.png" class="r-stretch"></img>
+                    <p class="attribution">Stamen Design, OpenStreetMap contributors</p>
+                </section>
+                <section>
+                    Math functions for zoom-based styling
+                <pre><code data-line-numbers="3,4,5">"paint": {
+    "line-width": [
+        "interpolate",
+        ["exponential",1.6],
+        ["zoom"],
+        14,0,
+        14.5,0.5,
+        20,12
+    ]
+}</code></pre>
+                </section>
+                <section>
+                    <video data-autoplay data-src="images/GLZoom.mov" class="r-stretch"></video>
+                </section>
+                <section>
+                    Direct access to the underlying medium
+                    <pre><code>shaders:
+...
+float stripesDF (vec2 st) {
+    return abs(sin(st.y*PI));
+}
+float stripes (vec2 st, float width) {
+    return aastep(width, stripesDF(st));
+}
+color.rgb = mix(u_l, color.rgb, gl_FragCoord.x / u_res.x);
+color = mix(color,vec4(u_l2,1.0),stripes(st*92.,.5))*1.0;</code></pre>
+                </section>
+                <section>
+                    <img src="images/TangramPatterns.png" class="r-stretch"></img>
+                    <div class="attribution" style='margin-top:1rem'>Mapzen Refill, OpenStreetMap contributors</div>
+                </section>
+                <section style="text-align:left;font-size:1.8rem;line-height:1.8">
+                    <div><b>Observations</b></div>
+                    <ul>
+                        <li>Practical basemapping can demand hundreds of rules.</li>
+                        <li>Familiarity with CSS or JSON is a double-edged sword.</li>
+                        <li>More computational power lends more cartographic expressiveness.</li>
+                    </ul>
+                </section>
+                <section>
+                    Instead of assembling a language from cartographic principles,
+                    embed cartography inside an existing programming language.
+                </section>
+                <section style="text-align:left;font-size:1.8rem;line-height:1.8">
+                    <div><b>protomaps.js</b></div>
+                    <ul>
+                        <li>A cartographic language inside JavaScript.</li>
+                        <li>Runs inside the web browser.</li>
+                        <li>Targets the Canvas 2D API.</li>
+                    </ul>
+                </section>
+                <section>
+                    Basics: Variables
+                    <pre><code data-trim data-noescape>
+let NATURAL_COLOR = "seagreen"
+let RULES = [
+    {
+        dataLayer: "natural",
+        symbolizer: new PolygonSymbolizer({
+            fill: NATURAL_COLOR
+        })
+    }
+]
+                    </code></pre>
+                </section>
+                <section>
+                    Familiar concepts for d3.js users.
+                    <pre><code data-trim data-noescape data-line-numbers="|3-6|8-10">
+        dataLayer: "landuse",
+        symbolizer: new PolygonSymbolizer({
+            fill:(z:number,f:Feature) => {
+                if (f.props.kind === "natural") return "green"
+                else return "yellow"
+            }
+        })
+        filter:(z:number,f:Feature) => { 
+            return f.props.scalerank < 6
+        }
+                    </code></pre>
+                </section>
+                <section>
+                    Attributes as Functions
+                    <pre><code data-trim data-noescape data-line-numbers="|3-5">
+symbolizer: new LineSymbolizer({
+    color:"steelblue",
+    width: z => {
+        return Math.pow(2,z-10)
+    }
+}),
+                    </code></pre>
+                </section>
+                <section>
+                    <video data-autoplay data-src="images/protomapsExpression.mov" class="r-stretch"></video>
+                </section>
+                <section>
+                    Define your own symbology, using the underlying 2D drawing API.
+                    <pre><code data-line-numbers="|7-11">class TrianglePopulationSymbolizer {
+    place(layout,geom,feature) {
+        let a = geom[0][0]
+        let bbox = {minX:a.x-8, minY:a.y-8,maxX:a.x+8,maxY:a.y+8}
+        let draw = ctx => {
+            ctx.fillStyle = "black"
+            ctx.beginPath()
+            ctx.moveTo(-5,0)
+            ctx.lineTo(0,-9)
+            ctx.lineTo(5,0)
+            ctx.fill()
+            ctx.fillText(feature.props.population,8,0)
+        }
+        return [{anchor:anchor,bboxes:[bbox],draw:draw}]
+    }
+}</code></pre>
+                </section>
+                <section>
+                    <img src="images/CustomSymbolizer.png" class="r-stretch"></img>
+                </section>
+                <section>
+                    Composition
+<pre><code><script type="text/template">symbolizer: new CircleSymbolizer({
+    radius:3,
+    fill:"#666",
+    width:2,
+    stroke:"#ccc"
+}),
+</script></code></pre>
+                </section>
+                <section>
+                    <img src="images/Composition1.png" class="r-stretch"></img>
+                </section>
+                 <section>
+                    Composition
+<pre><code><script type="text/template">symbolizer: new CenteredTextSymbolizer({
+    label_props:["name"],
+    fill:neighbourhoodFill,
+    font:"500 16px sans-serif",
+    textTransform:"uppercase",
+    y:16
+}),
+</script></code></pre>
+                </section>
+                <section>
+                    <img src="images/Composition2.png" class="r-stretch"></img>
+                </section>
+                 <section>
+                    Composition
+<pre><code data-line-numbers="1|2-7|8-14"><script type="text/template">symbolizer: new GroupSymbolizer([
+    new CircleSymbolizer({
+        radius:3,
+        fill:"#666",
+        width:2,
+        stroke:"#ccc"
+    }),
+    new CenteredTextSymbolizer({
+        label_props:["name"],
+        fill:neighbourhoodFill,
+        font:"500 16px sans-serif",
+        textTransform:"uppercase",
+        y:16
+    }),
+]),
+</script></code></pre>
+                </section>
+                <section>
+                    <img src="images/Composition3.png" class="r-stretch"></img>
+                </section>
+                <section>
+                    <img src="images/Composition4.png" class="r-stretch"></img>
+                </section>
+                <section>
+                    <div style="display:flex;text-align:left;align-items:center">
+                        <div style="font-size:1.6rem;margin-right:4rem;line-height: 1.8">
+                            <li>Practical to use with Leaflet for basemaps.</li>
+                            <li>Consumes popular MVT vector tile format.</li>
+                            <li>Free and open source software on GitHub.</li>
+                        </div>
+                        <img src="images/github_preview.jpg" style="width:35%"></img>
+                    </div>
+                    <ul>
+                    </ul>
+                </section>
+                <section style="text-align:left;font-size:2rem;line-height: 1.8">
+                    <div><b>Benefits</b></div>
+                    <ul>
+                        <li>A complete programming language.</li>
+                        <li>Composition, parameterization are powerful cartographic tools.</li>
+                        <li>Direct access to the underlying 2D API.</li>
+                    </ul>
+                </section>
+                <section style="text-align:left;font-size:2rem; line-height: 1.8;">
+                    <div><b>Drawbacks</b></div>
+                    <ul>
+                        <li>A complete programming language.</li>
+                        <li>Not a useful intermediate form for "buttons and sliders" styling.</li>
+                        <li>Suited only for CPU rendering, not GPU-accelerated maps.</li>
+                    </ul>
+                </section>
+                <section style="text-align:left;font-size:1.6rem; line-height: 1.8;">
+                    <div><b>Conclusion</b></div>
+                    <ul>
+                        <li>New tools to make slippy map cartography simple, expressive and <span style="font-style: italic">fun</span></li>
+                        <li>Try protomaps.js — a lightweight vector map renderer for the web — <br/> at <a href="https://github.com/protomaps">github.com/protomaps</a></li>
+                        <li>Contact: <a href="mailto:brandon@protomaps.com">brandon@protomaps.com</a></li>
+                    </ul>
+                </section>
+            </div>
+        </div>
+        <script src="dist/reveal.js"></script>
+        <script src="plugin/notes/notes.js"></script>
+        <script src="plugin/markdown/markdown.js"></script>
+        <script src="plugin/highlight/highlight.js"></script>
+        <script>
+            Reveal.initialize({
+                hash: true,
+                plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+            });
+        </script>
+    </body>
+</html>
