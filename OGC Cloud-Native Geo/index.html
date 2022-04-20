@@ -1,0 +1,161 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <title>OGC Cloud-Native Geo</title>
+        <link rel="stylesheet" href="../reveal/dist/reset.css">
+        <link rel="stylesheet" href="../reveal/dist/reveal.css">
+        <link rel="stylesheet" href="../reveal/dist/theme/black.css">
+        <link rel="stylesheet" href="../reveal/plugin/highlight/zenburn.css">
+    </head>
+    <body>
+        <div class="reveal">
+            <div class="slides">
+                <section>
+                    <h2>☁⛈️</h2>
+                    <h2>
+                    No Two Clouds Are Alike! 
+                    </h2>
+                    <p>
+                        Storage Challenges for Cloud-Optimized Geodata
+                    </p>
+                    <p>Brandon Liu, Protomaps LLC
+                    </p>
+                </section>
+                <section>
+                    <img style="height:300px" src="images/protomaps.png"></img>
+                    <ul>
+                        <li><a href="https://protomaps.com">Protomaps</a> is end-to-end system for packaging and styling maps using static files</li>
+                        <li>Cloud-native from the ground up (PMTiles)</li>
+                        <li>open source components: <a href="https://github.com/protomaps">github.com/protomaps</a></li>
+                    </ul>
+                </section>
+                <section>
+                    <img style="height:300px" src="images/mantle.png"></img>
+                    <ul>
+                        <li>Mantle - vector basemap product on your own cloud</li>
+                        <li>Lambda @ Edge / Cloudflare Workers</li>
+                        <li><strong>Vendor neutrality</strong> is a key part of value proposition</li>
+                    </ul>
+                </section>
+                <section>
+                    <ul>
+                        <li><a href="https://github.com/protomaps/PMTiles">PMTiles</a> is "cloud-optimized MBTiles"</li>
+                        <li>Agnostic to tile content</li>
+                        <li>Open source spec and implementations  at <a href="github.com/protomaps/PMTiles">github.com/protomaps/PMTiles</a></li>
+                        <li>Python, Go, direct-to-browser TypeScript, Leaflet, MapLibre GL JS, <a href="https://github.com/protomaps/tippecanoe">Tippecanoe (WIP)</a></li>
+                        <li>Similar projects: <a href="https://github.com/linz/cotar">Cotar</a>, <a href="https://github.com/mactrem/com-tiles">COMTiles</a>, <a href="https://github.com/openaddresses/TileBase">TileBase</a></li>
+                    </p>
+                </section>
+                <section>
+                    <p>PMTiles spec is built on cloud-native principles</p>
+                    <ul>
+                        <li><code>HTTP 206 Partial Content</code></li>
+                        <li>Spatial index</li>
+                        <li><strong>commodity cloud storage</strong></li></ul>
+                    </ul>
+                </section>
+                <section>
+                    <ul>
+                        <li>What I learned from real-world deployment of vector PMTiles on different clouds</li>
+                        <li>applies to other cloud-optimized formats as well - FlatGeobuf, COG, COPC...</li>
+                </section>
+                <section>
+                    <p>Challenge Areas</p>
+                    <ol>
+                        <li>Performance</li>
+                        <li>Security</li>
+                        <li>Freshness</li>
+                    </ol>
+                </section>
+                <section>
+                    <img style="height:300px" src="images/station_wagon.jpg"></img>
+                    <p>
+                        <a href="https://en.wikiquote.org/wiki/Andrew_S._Tanenbaum">Never underestimate the bandwidth of a station wagon full of <strike>tapes</strike> tiles hurtling down the highway...</a>
+                    </p>
+                </section>
+                <section>
+                    <h3>"Cloud-optimized": optimized for latency, not bandwidth</h3>
+                    <ul>
+                        <li>Enables slippy-map user experience with overviews</li>
+                        <li>Enables interactive queries without full scans</li>
+                        <li>Enables extracting area of interest</li>
+                    </ul>
+                </section>
+                <section>
+                    <img style="height:200px" src="images/http2.png"></img>
+                    <ul>
+                        <li>HTTP/2 multiplexing is vital for <a href="https://github.com/protomaps/PMTiles/issues/16">concurrent HTTP requests from browser</a></li>
+                        <li>Most vendors support only HTTP/1.1 on core storage platform; HTTP/2 feature of separate CDN product</li>
+                        <li>Example: Google Cloud Storage supports HTTP/2</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>Byte Serving + Compression</h2>
+                    <ul>
+                        <li>Vector formats don't have de facto domain compression like PNG, JPG</li>
+                        <li><code>206 Partial Content</code> incompatible with HTTP <code>Content-Encoding</code></li>
+                        <li>Browser <a href="https://developer.mozilla.org/en-US/docs/Web/API/DecompressionStream">DecompressionStream API</a> not widely implemented</li>
+                        <li>Multipart <code>Range: bytes=0-100, 100-150</code> generally not supported by storage</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>Security</h2>
+                    <ul>
+                        <li>Serving files from storage direct to browser = good!</li>
+                        <li>General use case involves cross-origin requests</li>
+                        <li>example: S3 CORS configuration allows multiple origins</li>
+                        <li>Other storage providers allow only one origin or wildcard <code>*</code></li>
+                    </ul>
+                </section>
+                <section>
+                    <img style="height:100px" src="images/Napster_corporate_logo.svg.png"></img>
+                    <h2>the Mapster challenge</h2>
+                    <ul>
+                        <li><code>206 Partial Content</code> also allows download of entire dataset: No DRM!</li>
+                        <li>Public hosting on cloud storage risks runaway costs</li>
+                        <li>No cloud implements "206 only" access policy</li>
+                        <li>Requester Pays a vendor-specific solution</li>
+                    </p>
+                </section>
+                <section>
+                    <h2>Freshness</h2>
+                    <ul>
+                        <li>Even with read-optimized design, need updates</li>
+                        <li>Replace whole file on cloud storage and use opaque <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag">ETag</a> to detect changes</li>
+                        <li>Implementations and caches can use <code>ETag</code> for staleness check</li>
+                        <li>Spec designs can consider this - no sidecars!</li>
+                    </p>
+                </section>
+                <section>
+                    <h2>Conclusions</h2>
+                    <ul>
+                        <li>Performance, Security, Freshness should influence spec and implementation design</li>
+                        <li>Cloud Storage market is competitive + evolving</li>
+                        <li>Don't build for AWS S3 only please 🙂</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>Thank you!</h2>
+                    <ul>
+                        <li>discuss on Gitter chat</li>
+                        <li>twitter: <a href="https://twitter.com/protomaps">@protomaps</a></li>
+                        <li>github: <a href="https://github.com/bdon">@bdon</a></li>
+                        <li>email: <a href="mailto:brandon@protomaps.com">brandon@protomaps.com</a>
+                    </ul>
+                </section>
+            </div>
+        </div>
+        <script src="../reveal/dist/reveal.js"></script>
+        <script src="../reveal/plugin/notes/notes.js"></script>
+        <script src="../reveal/plugin/markdown/markdown.js"></script>
+        <script src="../reveal/plugin/highlight/highlight.js"></script>
+        <script>
+            Reveal.initialize({
+                hash: true,
+                plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+            });
+        </script>
+    </body>
+</html>
