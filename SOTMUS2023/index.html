@@ -1,0 +1,237 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <title>SOTMUS 2023</title>
+        <link rel="stylesheet" href="../reveal/dist/reset.css">
+        <link rel="stylesheet" href="../reveal/dist/reveal.css">
+        <link rel="stylesheet" href="../reveal/dist/theme/black.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,300" rel="stylesheet" type="text/css">
+    </head>
+    <style>
+        :root {
+          --r-background-color: #284D74;
+          --r-main-font: Open Sans;
+          --r-link-color: #A7D794;
+        }
+
+        li {
+            margin-bottom:0.7em;
+            font-size: 36px;
+        }
+
+        h3 {
+            text-transform: none !important;
+        }
+
+        .attrib {
+            font-size: 16px;
+        }
+    </style>
+    <body>
+        <div class="reveal">
+            <div class="slides">
+                <section>
+                    <h3>An Infinite Map</h3>
+                    <p>
+                        The Protomaps Basemap + OpenStreetMap
+                    </p>
+                    <p>
+                        <a href="https://protomaps.com">Brandon Liu - Protomaps LLC</a>
+                    </p>
+                </section>
+                <section>
+                    <p>
+                        OpenStreetMap is an <em>infinite map</em><br/>
+                        in <b>two important ways.</b>
+                    </p>
+                </section>
+                <section>
+                    <p>Infinite detail - open ended tagging scheme</p>
+                    <img src="images/wastebasket.png"/>
+                </section>
+                <section>
+                    <p>Infinite detail - open ended tagging scheme</p>
+                    <img src="images/taginfo-golf.png"/>
+                </section>
+                <section>
+                    <p>Infinite reproduction - ODbL license</p>
+                    <img src="images/planet-osm.png"/>
+                </section>
+                <section>
+                    <p>Infinite reproduction - Mirroring</p>
+                    <img src="images/planet-mirrors.png"/>
+                </section>
+                <section>
+                    <p>❤️ OSM: infinite flexibility + reproduction</p>
+                    <p>💔 but that's <b>not</b> true of <em>tiles</em> </p>
+                </section>
+                <section>
+                    <p>Tiled basemap cartographic products: A primary use case for OSM.</p>
+                    <img src="images/TilePyramid.png"/>
+                    <p class="attrib">Source: Azavea Blog</p>
+                </section>
+                <section>
+                    <img src="images/osm-carto.png" style="width:30%"/>
+                    <p>OSM Carto tileset is <b>not</b> infinitely usable or reproducible.</p>
+                    <em>"OpenStreetMap data is free for everyone to use. Our tile servers are not."- <a href="https://operations.osmfoundation.org/policies/tiles/">OSMF Tile Usage Policy</a></em>
+                </section>
+                <section>
+                    <h3>Typical tiled basemaps</h3>
+                    <p>Delivered as commercial API</p>
+                    <p>No scraping, metered usage</p>
+                    <img src="images/column-pricing.png"/>
+                </section>
+                <section>
+                    <h3>Typical tiled basemaps</h3>
+                    <p>Fixed one-size-fits-all tagging scheme</p>
+                    <p>Might not have the data you want to show</p>
+                    <video data-autoplay src="images/ZoomScaleExample.mp4"></video>
+                </section>
+                <section>
+                    <h3>The Protomaps basemap</h3>
+                    <ul>
+                        <li>🎯 The <b>missing vector tile cartographic product</b> for OpenStreetMap.</li>
+                        <li>Infinite flexibility + open source</li>
+                        <li><a href="https://github.com/protomaps/basemaps">github.com/protomaps/basemaps</a></li>
+                    </ul>
+                </section>
+                <section>
+                    <p>So how do I use it?</p>
+                    <p>✨ a free single file download on <a href="http://protomaps.com/docs">protomaps.com/docs</a></p>
+                    <img src="images/basemap-download.png"/>
+                </section>
+                <section>
+                    <video data-autoplay src="images/inspect-viewer.mp4"></video>
+                </section>
+                <section>
+                    <img src="images/vector0.png"/>
+                </section>
+                <section>
+                    <img src="images/vector1.png"/>
+                </section>
+                <section>
+                    <img src="images/vector2.png"/>
+                </section>
+                <section>
+                    <h3>basemap.pmtiles</h3>
+                    <ul>
+                        <li>~100 GB</li>
+                        <li><a href="https://wiki.openstreetmap.org/wiki/Open_Data_License/Produced_Work_-_Guideline#:~:text=The%20ODbL%20license%20has%20a,part%20of%20a%20Collective%20Database.">ODbL Produced Work</a> license (© OpenStreetMap)</li>
+                        <li>Mix of other public domain datasets (Natural Earth)</li>
+                        <li>Can be served directly to MapLibre, Leaflet without tileserver</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>Open source build</h2>
+                    <ul>
+                        <li>Based on <a href="https://github.com/onthegomap/planetiler">onthegomap/planetiler</a> core library</li>
+                        <li>Direct .pmtiles output and z15 added to Planetiler</li>
+                        <li><b>Focus</b> on generation speed: ~3-4 hours on modest desktop</li>
+                    </ul>
+                </section>
+                <section>
+                    <p>How to run</p>
+                    <pre>
+git clone github.com/protomaps/basemaps
+cd tiles/
+mvn clean package
+java -jar target/*-with-deps.jar --download --area=us/virginia</pre>
+                </section>
+                <section>
+                    <p>Download minutely regional tileset at protomaps.com/docs/downloads</p>
+                    <video data-autoplay src="images/richmond-select.mp4"></video>
+                </section>
+                <section>
+                    <h3>Compared to: Mapbox, OpenMapTiles</h3>
+                    <ul>
+                        <li>✅ <b>Primary way</b> to use map is make-your-own-tileset and enable fast customization</li>
+                        <li>"free-forever" edge-cached tile API at <a href="https://protomaps.com">protomaps.com</a>, supported by GitHub Sponsors</li>
+                        <li>ODbL Produced Work license</li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>Compared to: Tilezen</h3>
+                    <ul>
+                        <li>✅ Converging on Tilezen design for cartography</li>
+                        <li>✅ Mixing in other data sources (Natural Earth, Overture, Daylight, Wikidata, QRank...)</li>
+                        <li>✅ Preserve permissive license</li>
+                    </ul>
+               </section>
+                <section>
+                    <h3>Compared to: 🗺️ MapLibre</h3>
+                    <ul>
+                        <li>✅ Protomaps basemap primary target: MapLibre GL</li>
+                        <li>Leaflet renderer (<a href="https://github.com/protomaps/protomaps.js">protomaps.js</a>) in maintenance mode</li>
+                        <li>Experimental support for OpenLayers</li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>Compared to: 🌎 Planetiler</h3>
+                    <ul>
+                        <li>Implementation of specific layers + tags scheme on top of Planetiler core</li>
+                        <li>Upstream stable, general-purpose cartographic primitives and utilities (e.g. pmtiles support)</li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>What's the status?</h3>
+                    <ul>
+                        <li>✅ tiles and styles in a single repo: <a href="https://github.com/protomaps/basemaps">github.com/protomaps/basemaps</a></li>
+                        <li>⏸️ A fairly ugly map at the moment</li>
+                        <li>🌅 Roadmap: focus on visual and cartographic design</li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>Road networks, offramps and cloverleafs</h3>
+                    <video data-autoplay src="images/graph-generalization.mp4"></video>
+                </section>
+                <section>
+                    <h3>Compare view</h3>
+                    <p>Powered by <a href="https://github.com/stamen/maperture">github.com/stamen/maperture</a></p>
+                    <video data-autoplay src="images/link-simplify.mp4"></video>
+                </section>
+                <section>
+                    <h3>How to customize?</h3>
+                    <ul>
+                        <li><b>Right now</b>: do it in Java</li>
+                        <li><b>Eventually:</b> config file for customizing basemap</li>
+                        <li><b>Example custom layers:</b> golfing, skiing, wastebaskets</li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>PMTiles ecosystem</h3>
+                    <ul>
+                        <li><a href="https://github.com/protomaps">github.com/protomaps</a></li>
+                        <li><a href="https://stadiamaps/pmtiles-rs">stadiamaps/pmtiles-rs</a></li>
+                        <li><a href="https://arma-place/pmtiles-rs">arma-place/pmtiles-rs</a></li>
+                        <li><a href="https://developmentseed/thatchertiler">developmentseed/thatchertiler</a></li>
+                        <li><a href="https://developmentseed/aiopmtiles">developmentseed/aiopmtiles</a></li>
+                        <li><a href="https://github.com/maplibre/martin">github.com/maplibre/martin</a></li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>GitHub Sponsors: Thank you!</h3>
+                    <p>Supporting open source development and hosted API</p>
+                    <a href="https://github.com/sponsors/protomaps/">github.com/sponsors/protomaps</a>
+                    <img src="images/sponsor-avatars.png"/>
+                </section>
+                <section>
+                    <h3>Thanks!</h3>
+                    <p>Find me at <a href="https://github.com/protomaps">github.com/protomaps</a></p>
+                    <img src="images/qrcode.png"/>
+                </section>
+            </div>
+        </div>
+        <script src="../reveal/dist/reveal.js"></script>
+        <script src="../reveal/plugin/notes/notes.js"></script>
+        <script src="../reveal/plugin/markdown/markdown.js"></script>
+        <script src="../reveal/plugin/highlight/highlight.js"></script>
+        <script>
+            Reveal.initialize({
+                hash: true,
+                plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+            });
+        </script>
+    </body>
+</html>
